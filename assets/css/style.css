@@ -1,0 +1,51 @@
+.gameDiv{
+border-style:solid;
+border-width: 1px;
+width: 200px;
+height:200px;
+float:left;
+margin-left: 13%;
+margin-top: 20px;
+}
+
+
+.yourTurn{
+
+  border-style:solid;
+  border-color:red;
+  border-width: 1px;
+  width: 200px;
+  height:200px;
+  float:left;
+  margin-left: 13%;
+  margin-top: 20px;
+
+
+}
+
+
+
+
+#input{
+
+position:relative;
+left:50%;
+
+}
+
+
+#chatBox{
+  border-style:solid;
+  border-width: 1px;
+  width: 503px;
+  height:200px;
+  clear:both;
+  position:relative;
+  top:100px;
+  left:400px;
+}
+
+#textBox{
+position: absolute;
+bottom:0px
+}
