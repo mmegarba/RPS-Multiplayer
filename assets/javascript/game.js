@@ -168,19 +168,21 @@ function updateScore(winner){
 if(currentPlayer === winner)
 
 {
-  wins++
+  wins++;
+
+  database.ref("Players/" + currentPlayer ).child("wins").set(wins);
+
 }
 
 else{
+  losses++;
 
-  losses++
+  database.ref("Players/"+ currentPlayer ).child("losses").set(losses);
 }
 
 
 
   // database.ref("Players/" + "1" ).child("wins").set(wins);
-  database.ref("Players/"+ "1" ).child("losses").set(losses);
-  database.ref("Players/" + "2" ).child("wins").set(wins);
   // database.ref("Players/" + "2").child("losses").set(losses);
 
 };
@@ -238,17 +240,6 @@ turnIndicator();
 
 });
 
-// stats watcher
-// database.ref("Players/" + turn).on("child_changed", function(childSnapshot) {
-//
-// console.log(childSnapshot.val())
-// turn = childSnapshot.val()
-//
-// turnIndicator();
-//
-// });
-
-
 
 
 
@@ -271,6 +262,11 @@ if(Player1 === "")
  });
 
  currentPlayer = "1";
+
+
+ $("#input").empty();
+ $("#welcomePlayer").html("Hi " + newPlayer + "! You are player 1")
+
 }
 
   else{
@@ -282,8 +278,11 @@ if(Player1 === "")
     losses: 0,
 
 
+
 });
 currentPlayer = "2";
+$("#input").empty();
+$("#welcomePlayer").html("Hi " + newPlayer + "! You are player 2")
 
   }
 
@@ -498,6 +497,23 @@ if(turn === "2")
   $("#P2").attr("class","yourTurn")
   gameOptionsDisplay2();
 }
+
+}
+
+
+
+
+if(currentPlayer === turn)
+{
+$("#playerStatus").html("Its Your Turn!")
+
+}
+
+else{
+
+// need to finish this one
+$("#playerStatus").html("Waiting for " + currentOpponent + " to choose.")
+
 
 }
 
