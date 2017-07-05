@@ -36,6 +36,52 @@ var config = {
   var database = firebase.database();
 
 
+
+
+
+
+// watcher for disconnects
+
+database.ref("Players").on("child_removed" , function(snapshot){
+
+  //
+
+var key = snapshot.key
+
+
+
+var disconnected = snapshot.val()
+
+// append to chat
+var newP = $("<p>")
+newP.html(disconnected.name + " has disconnected.")
+newP.attr("style", "color:red")
+$("#chatBox").append(newP)
+
+
+if(key === "1")
+{
+  $("#Player1Name").html("Waiting for Player 1");
+  $("#Player2WinsLosses").empty();
+  $("#Player1").empty();
+
+  Player1 = "";
+}
+if(key === "2")
+{
+  $("#Player2Name").html("Waiting for Player 2");
+  $("#Player2WinsLosses").empty();
+  $("#Player2").empty();
+  Player2 = "";
+}
+
+
+});
+
+
+
+
+
 database.ref("Players/").on("child_added", function(childSnapshot) {
 
 
@@ -74,6 +120,43 @@ turnIndicator();
 });
 
 
+database.ref("Players/" + currentPlayer).on("child_changed", function(){
+
+  // var query = database.ref("Players").orderByKey();
+  // query.once("value")
+  //   .then(function(snapshot) {
+  //     snapshot.forEach(function(childSnapshot) {
+  //
+  //       var key = childSnapshot.key;
+  //
+  // console.log(key.wins)
+  // console.log(key.losses)
+  //
+
+  // Player1WinsLosses.html("Wins: " + key.wins)
+
+  database.ref("Players/" + currentPlayer).once("value", function(childSnapshot){
+
+    var snap = childSnapshot.val()
+
+    console.log(snap.name)
+
+  });
+
+
+
+
+    });
+//   });
+//
+//
+// });
+
+
+
+
+
+
 
 
 
@@ -87,7 +170,6 @@ database.ref("turn/").on("child_changed", function(childSnapshot) {
 database.ref("Players/" + turn + "/choice").once("value", function(childSnapshot)
 {
 
-console.log(childSnapshot.val())
 
 if(turn ==="1")
 {
@@ -136,26 +218,33 @@ function gameLogic(){
     } else if (Player2Choice == "scissors") {
       console.log("Player1Wins")
       revealWinner(Player1)
+      updateScore("1")
+
 
     }
   } else if (Player1Choice == "paper") {
     if (Player2Choice == "rock") {
 console.log("Player1Wins")
 revealWinner(Player1)
+updateScore("1")
+
 
     } else if (Player2Choice == "scissors") {
 console.log("Player2Wins")
 revealWinner(Player2)
+updateScore("2")
 
     }
   } else if (Player1Choice == "scissors") {
     if (Player2Choice == "rock") {
 console.log("Player2Wins")
 revealWinner(Player2)
+updateScore("2")
 
     } else if (Player2Choice == "paper") {
 console.log("Player1Wins")
 revealWinner(Player1)
+updateScore("1")
 
     }
   }
@@ -169,14 +258,14 @@ if(currentPlayer === winner)
 
 {
   wins++;
-
+  console.log("winner")
   database.ref("Players/" + currentPlayer ).child("wins").set(wins);
 
 }
 
 else{
   losses++;
-
+  console.log("loser")
   database.ref("Players/"+ currentPlayer ).child("losses").set(losses);
 }
 
@@ -233,7 +322,6 @@ function resetRound(){
 };
 
 
-console.log(childSnapshot.val())
 
 turn = childSnapshot.val()
 turnIndicator();
@@ -244,6 +332,9 @@ turnIndicator();
 
 
 $("#submitPlayer").on("click" , function(){
+
+
+
 if(lockInput === false)
 {
   event.preventDefault();
@@ -288,6 +379,10 @@ $("#welcomePlayer").html("Hi " + newPlayer + "! You are player 2")
 
 };
 lockInput = true;
+
+
+database.ref("Players/" + currentPlayer).onDisconnect().remove();
+
 });
 
 $("#enterChat").on("click" , function(){
@@ -324,7 +419,6 @@ database.ref("chat/chatHistory").on("child_added", function(snapshot)
 
 
 
-console.log(snapshot.getKey())
 
 var newChat = $("<p>");
 
@@ -474,6 +568,24 @@ if(player==="2")
 
 function turnIndicator(){
 
+ var currentOpponent;
+
+
+  if(currentPlayer === "1")
+  {
+
+    currentOpponent= Player2
+
+  }
+  else{
+    currentOpponent= Player1
+
+  }
+
+
+
+
+
   if(Player1 != "" &&  Player2 != ""){
 
     $("#P1").attr("class","gameDiv")
@@ -487,7 +599,6 @@ if(turn === "1")
 
   if(Player1Choice === "" && Player2Choice === "" )
   {
-    console.log("fail")
   gameOptionsDisplay1();
   }
 }
@@ -511,9 +622,14 @@ $("#playerStatus").html("Its Your Turn!")
 
 else{
 
-// need to finish this one
+if(Player2 != "")
+{
+
+
 $("#playerStatus").html("Waiting for " + currentOpponent + " to choose.")
 
+
+}
 
 }
 
